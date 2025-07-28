@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finansielt Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-chart-line"></i> Finansielt Dashboard</h1>
+            <div class="header-controls">
+                <button id="addCompanyBtn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Legg til selskap
+                </button>
+                <button id="exportBtn" class="btn btn-secondary">
+                    <i class="fas fa-download"></i> Eksporter til Excel
+                </button>
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </button>
+            <button class="tab-btn" data-tab="marginer">
+                <i class="fas fa-percentage"></i> Marginer
+            </button>
+            <button class="tab-btn" data-tab="lønnsomhet">
+                <i class="fas fa-coins"></i> Lønnsomhet
+            </button>
+            <button class="tab-btn" data-tab="gjeld">
+                <i class="fas fa-credit-card"></i> Gjeld
+            </button>
+            <button class="tab-btn" data-tab="utbytte">
+                <i class="fas fa-money-bill-wave"></i> Utbytte
+            </button>
+            <button class="tab-btn" data-tab="risiko">
+                <i class="fas fa-exclamation-triangle"></i> Risiko
+            </button>
+            <button class="tab-btn" data-tab="data">
+                <i class="fas fa-database"></i> Datafangst
+            </button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="summary-cards">
+                    <div class="card">
+                        <h3><i class="fas fa-building"></i> Totalt antall selskaper</h3>
+                        <div class="metric" id="totalCompanies">0</div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-chart-bar"></i> Gjennomsnittlig ROE</h3>
+                        <div class="metric" id="avgROE">0%</div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-balance-scale"></i> Gjennomsnittlig D/E</h3>
+                        <div class="metric" id="avgDE">0.0</div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-money-bill"></i> Gjennomsnittlig utbytteyield</h3>
+                        <div class="metric" id="avgDividendYield">0%</div>
+                    </div>
+                </div>
+
+                <div class="companies-overview">
+                    <h3><i class="fas fa-list"></i> Selskaper - Nøkkeltall</h3>
+                    <div class="table-container">
+                        <table id="companiesTable">
+                            <thead>
+                                <tr>
+                                    <th>Selskap</th>
+                                    <th>ROE</th>
+                                    <th>ROA</th>
+                                    <th>D/E</th>
+                                    <th>Beta</th>
+                                    <th>Payout %</th>
+                                    <th>Utbytte yield</th>
+                                    <th>EBITDA margin</th>
+                                    <th>Risiko</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Companies will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marginer Tab -->
+        <div id="marginer" class="tab-content">
+            <div class="metrics-section">
+                <h2><i class="fas fa-percentage"></i> Marginer</h2>
+                <div class="company-selector">
+                    <select id="marginCompanySelect">
+                        <option value="">Velg selskap</option>
+                    </select>
+                </div>
+                <div class="margin-charts">
+                    <div class="chart-container">
+                        <h3>EBITDA Margin (%)</h3>
+                        <canvas id="ebitdaChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Driftsmargin (%)</h3>
+                        <canvas id="operatingChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Nettemargin (%)</h3>
+                        <canvas id="netChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lønnsomhet Tab -->
+        <div id="lønnsomhet" class="tab-content">
+            <div class="metrics-section">
+                <h2><i class="fas fa-coins"></i> Lønnsomhet</h2>
+                <div class="company-selector">
+                    <select id="profitabilityCompanySelect">
+                        <option value="">Velg selskap</option>
+                    </select>
+                </div>
+                <div class="profitability-charts">
+                    <div class="chart-container">
+                        <h3>Return on Equity (ROE) %</h3>
+                        <canvas id="roeChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Return on Assets (ROA) %</h3>
+                        <canvas id="roaChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Return on Invested Capital (ROIC) %</h3>
+                        <canvas id="roicChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gjeld Tab -->
+        <div id="gjeld" class="tab-content">
+            <div class="metrics-section">
+                <h2><i class="fas fa-credit-card"></i> Gjeld og Soliditet</h2>
+                <div class="company-selector">
+                    <select id="debtCompanySelect">
+                        <option value="">Velg selskap</option>
+                    </select>
+                </div>
+                <div class="debt-charts">
+                    <div class="chart-container">
+                        <h3>Debt-to-Equity Ratio</h3>
+                        <canvas id="deChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Rentedekningsgrad</h3>
+                        <canvas id="interestCoverageChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Egenkapitalandel (%)</h3>
+                        <canvas id="equityRatioChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Utbytte Tab -->
+        <div id="utbytte" class="tab-content">
+            <div class="metrics-section">
+                <h2><i class="fas fa-money-bill-wave"></i> Utbytte og Payout</h2>
+                <div class="company-selector">
+                    <select id="dividendCompanySelect">
+                        <option value="">Velg selskap</option>
+                    </select>
+                </div>
+                <div class="dividend-charts">
+                    <div class="chart-container">
+                        <h3>Utbytte per aksje (NOK)</h3>
+                        <canvas id="dividendPerShareChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Payout Ratio (%)</h3>
+                        <canvas id="payoutRatioChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Dividend Yield (%)</h3>
+                        <canvas id="dividendYieldChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risiko Tab -->
+        <div id="risiko" class="tab-content">
+            <div class="metrics-section">
+                <h2><i class="fas fa-exclamation-triangle"></i> Risikoanalyse</h2>
+                <div class="risk-overview">
+                    <div class="risk-matrix">
+                        <h3>Risikomatrise</h3>
+                        <div class="table-container">
+                            <table id="riskMatrix">
+                                <thead>
+                                    <tr>
+                                        <th>Selskap</th>
+                                        <th>Beta</th>
+                                        <th>D/E Risiko</th>
+                                        <th>Payout Risiko</th>
+                                        <th>Volatilitet</th>
+                                        <th>Samlet Risiko</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Risk data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Tab -->
+        <div id="data" class="tab-content">
+            <div class="data-section">
+                <h2><i class="fas fa-database"></i> Datafangst og Input</h2>
+                <div class="data-input-form">
+                    <div class="form-group">
+                        <label for="companyName">Selskapsnavn:</label>
+                        <input type="text" id="companyName" placeholder="Skriv inn selskapsnavn">
+                    </div>
+                    <div class="form-group">
+                        <label for="year">År:</label>
+                        <select id="year">
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-sections">
+                        <div class="form-section">
+                            <h3>Marginer (%)</h3>
+                            <input type="number" id="ebitdaMargin" placeholder="EBITDA Margin" step="0.1">
+                            <input type="number" id="operatingMargin" placeholder="Driftsmargin" step="0.1">
+                            <input type="number" id="netMargin" placeholder="Nettemargin" step="0.1">
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Lønnsomhet (%)</h3>
+                            <input type="number" id="roe" placeholder="ROE" step="0.1">
+                            <input type="number" id="roa" placeholder="ROA" step="0.1">
+                            <input type="number" id="roic" placeholder="ROIC" step="0.1">
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Gjeld og Soliditet</h3>
+                            <input type="number" id="deRatio" placeholder="D/E Ratio" step="0.01">
+                            <input type="number" id="interestCoverage" placeholder="Rentedekningsgrad" step="0.1">
+                            <input type="number" id="equityRatio" placeholder="Egenkapitalandel %" step="0.1">
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Utbytte</h3>
+                            <input type="number" id="dividendPerShare" placeholder="Utbytte per aksje (NOK)" step="0.01">
+                            <input type="number" id="payoutRatio" placeholder="Payout Ratio %" step="0.1">
+                            <input type="number" id="dividendYield" placeholder="Dividend Yield %" step="0.1">
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Risiko</h3>
+                            <input type="number" id="beta" placeholder="Beta" step="0.01">
+                            <input type="number" id="volatility" placeholder="Volatilitet %" step="0.1">
+                        </div>
+                    </div>
+                    
+                    <button id="saveDataBtn" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Lagre data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Company Modal -->
+    <div id="companyModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Legg til nytt selskap</h2>
+            <form id="companyForm">
+                <input type="text" id="newCompanyName" placeholder="Selskapsnavn" required>
+                <input type="text" id="ticker" placeholder="Ticker (valgfri)">
+                <button type="submit" class="btn btn-primary">Legg til</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
+    <script src="demo-data.js"></script>
+</body>
+</html>
